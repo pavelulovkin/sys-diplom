@@ -1,6 +1,5 @@
-*.tfstate
-*.tfstate.*
-.terraform/
-terraform.tfvars
+*.tfstate*
+.terraform*
 *.tfvars
-main.tf
+*private/
+*.tf_
