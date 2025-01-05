@@ -1,11 +1,15 @@
 #
 resource "yandex_compute_instance" "bastion" {
-  name        = "bastion"
+  name            = "bastion"
+  hostname        = "bastion"
   platform_id     = var.platform_id
+  scheduling_policy {
+    preemptible   = var.scheduling_policy.preemptible
+  }
   resources {
-    cores         = var.cores
-    core_fraction = var.core_fraction
-    memory        = var.memory
+    cores         = var.instance_resources.cores
+    core_fraction = var.instance_resources.core_fraction
+    memory        = var.instance_resources.memory
   }
   boot_disk {
     initialize_params {
@@ -14,25 +18,29 @@ resource "yandex_compute_instance" "bastion" {
     }
   }
   network_interface {
-    subnet_id = yandex_vpc_subnet.subnet_public.id
-    nat       = true
+    subnet_id     = yandex_vpc_subnet.subnet_public.id
+    nat           = true
   }
   metadata = {
-    user-data = templatefile("${path.module}/user-data.tpl", {
-      username = "external"
-      ssh_key  = file("./private/external.pub")
+    user-data     = templatefile("${path.module}/user-data.tpl", {
+      username    = "external"
+      ssh_key     = file("./private/external.pub")
     })
   }
 }
 
 resource "yandex_compute_instance" "web-server" {
-  count       = 2
-  name        = "web-${count.index}"
+  count           = 2
+  name            = "web-server-${count.index + 1}"
+  hostname        = "web-server-${count.index + 1}"
   platform_id     = var.platform_id
+  scheduling_policy {
+    preemptible   = var.scheduling_policy.preemptible
+  }
   resources {
-    cores         = var.cores
-    core_fraction = var.core_fraction
-    memory        = var.memory
+    cores         = var.instance_resources.cores
+    core_fraction = var.instance_resources.core_fraction
+    memory        = var.instance_resources.memory
   }
   boot_disk {
     initialize_params {
@@ -41,20 +49,25 @@ resource "yandex_compute_instance" "web-server" {
     }
   }
   network_interface {
-    subnet_id = yandex_vpc_subnet.subnet_private.id
+    subnet_id     = yandex_vpc_subnet.subnet_private.id
+    nat           = false
   }
   metadata = {
-    ssh-keys = "${file("./private/internal.pub")}"
+    ssh-keys      = "${file("./private/internal.pub")}"
   }
 }
 
 resource "yandex_compute_instance" "zabbix-web" {
-  name        = "zabbix-web"
+  name            = "zabbix-web"
+  hostname        = "zabbix-web"
   platform_id     = var.platform_id
+  scheduling_policy {
+    preemptible   = var.scheduling_policy.preemptible
+  }
   resources {
-    cores         = var.cores
-    core_fraction = var.core_fraction
-    memory        = var.memory
+    cores         = var.instance_resources.cores
+    core_fraction = var.instance_resources.core_fraction
+    memory        = var.instance_resources.memory
   }
   boot_disk {
     initialize_params {
@@ -63,17 +76,21 @@ resource "yandex_compute_instance" "zabbix-web" {
     }
   }
   network_interface {
-    subnet_id = yandex_vpc_subnet.subnet_public.id
+    subnet_id     = yandex_vpc_subnet.subnet_public.id
   }
 }
 
 resource "yandex_compute_instance" "zabbix-server" {
-  name        = "zabbix-server"
+  name            = "zabbix-server"
+  hostname        = "zabbix-server"
   platform_id     = var.platform_id
+  scheduling_policy {
+    preemptible   = var.scheduling_policy.preemptible
+  }
   resources {
-    cores         = var.cores
-    core_fraction = var.core_fraction
-    memory        = var.memory
+    cores         = var.instance_resources.cores
+    core_fraction = var.instance_resources.core_fraction
+    memory        = var.instance_resources.memory
   }
   boot_disk {
     initialize_params {
@@ -82,17 +99,21 @@ resource "yandex_compute_instance" "zabbix-server" {
     }
   }
   network_interface {
-    subnet_id = yandex_vpc_subnet.subnet_private.id
+    subnet_id     = yandex_vpc_subnet.subnet_private.id
   }
 }
 
 resource "yandex_compute_instance" "kibana" {
-  name        = "kibana"
+  name            = "kibana"
+  hostname        = "kibana"
   platform_id     = var.platform_id
+  scheduling_policy {
+    preemptible   = var.scheduling_policy.preemptible
+  }
   resources {
-    cores         = var.cores
-    core_fraction = var.core_fraction
-    memory        = var.memory
+    cores         = var.instance_resources.cores
+    core_fraction = var.instance_resources.core_fraction
+    memory        = var.instance_resources.memory
   }
   boot_disk {
     initialize_params {
@@ -101,17 +122,21 @@ resource "yandex_compute_instance" "kibana" {
     }
   }
   network_interface {
-    subnet_id = yandex_vpc_subnet.subnet_public.id
+    subnet_id     = yandex_vpc_subnet.subnet_public.id
   }
 }
 
 resource "yandex_compute_instance" "elastic" {
   name            = "elastic"
+  hostname        = "elastic"
   platform_id     = var.platform_id
+  scheduling_policy {
+    preemptible   = var.scheduling_policy.preemptible
+  }
   resources {
-    cores         = var.cores
-    core_fraction = var.core_fraction
-    memory        = var.memory
+    cores         = var.instance_resources.cores
+    core_fraction = var.instance_resources.core_fraction
+    memory        = var.instance_resources.memory
   }
   boot_disk {
     initialize_params {
@@ -120,6 +145,6 @@ resource "yandex_compute_instance" "elastic" {
     }
   }
   network_interface {
-    subnet_id = yandex_vpc_subnet.subnet_private.id
+    subnet_id     = yandex_vpc_subnet.subnet_private.id
   }
 }

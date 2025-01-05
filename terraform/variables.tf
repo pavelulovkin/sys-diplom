@@ -33,3 +33,21 @@ variable "SUBNET_PRIVATE_CIDR" {
   type        = string
   default     = "10.0.2.0/24"
 }
+
+variable "platform_id" { default = "standard-v3" }
+variable "image_id" { default = "fd8lp26plun0ke6jooml"}
+variable "disk_size" { default = 10 }
+
+variable "instance_resources" {
+  default = {
+    cores         = 2
+    core_fraction = 20
+    memory        = 2
+  }
+}
+
+variable "scheduling_policy" {
+  default = {
+    preemptible   = true
+  }
+}

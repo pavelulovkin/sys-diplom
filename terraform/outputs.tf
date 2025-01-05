@@ -3,9 +3,9 @@ output "network_id" {
 }
 
 output "subnet_nat_id" {
-  value = yandex_vpc_subnet.subnet-nat.id
+  value = yandex_vpc_subnet.subnet_public.id
 }
 
 output "subnet_private_id" {
-  value = yandex_vpc_subnet.subnet-private.id
+  value = yandex_vpc_subnet.subnet_private.id
 }
