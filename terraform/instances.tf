@@ -34,6 +34,7 @@ resource "yandex_compute_instance" "web-server" {
   name            = "web-server-${count.index + 1}"
   hostname        = "web-server-${count.index + 1}"
   platform_id     = var.platform_id
+  zone            = var.YC_ZONES[count.index]
   scheduling_policy {
     preemptible   = var.scheduling_policy.preemptible
   }
@@ -49,8 +50,7 @@ resource "yandex_compute_instance" "web-server" {
     }
   }
   network_interface {
-    subnet_id     = yandex_vpc_subnet.subnet_private.id
-    nat           = false
+    subnet_id     = yandex_vpc_subnet.subnet_private_web[count.index].id
   }
   metadata = {
     ssh-keys      = "${file("./private/internal.pub")}"
@@ -99,7 +99,7 @@ resource "yandex_compute_instance" "zabbix-server" {
     }
   }
   network_interface {
-    subnet_id     = yandex_vpc_subnet.subnet_private.id
+    subnet_id     = yandex_vpc_subnet.subnet_public.id
   }
 }
 
@@ -145,6 +145,6 @@ resource "yandex_compute_instance" "elastic" {
     }
   }
   network_interface {
-    subnet_id     = yandex_vpc_subnet.subnet_private.id
+    subnet_id     = yandex_vpc_subnet.subnet_private_elastic.id
   }
 }

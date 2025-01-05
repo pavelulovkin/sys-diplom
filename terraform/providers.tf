@@ -10,5 +10,5 @@ provider "yandex" {
   token     = var.YC_TOKEN
   cloud_id  = var.YC_CLOUD_ID
   folder_id = var.YC_FOLDER_ID
-  zone      = var.ZONE
+  zone      = var.YC_ZONES[0]
 }

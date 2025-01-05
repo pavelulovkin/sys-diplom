@@ -11,27 +11,8 @@ variable "YC_FOLDER_ID" {
   description = "Идентификатор каталога Yandex Cloud (sys34-diploma)"
   type        = string
 }
-variable "ZONE" {
-  description = "Зона доступности Yandex Cloud"
-  type        = string
-  default     = "ru-central1-a"
-}
-variable "NETWORK_NAME" {
-  description = "Имя сети VPC"
-  type        = string
-  default     = "main-vpc"
-}
-
-variable "SUBNET_PUBLIC_CIDR" {
-  description = "Блок адресов для публичной подсети"
-  type        = string
-  default     = "10.0.1.0/24"
-}
-
-variable "SUBNET_PRIVATE_CIDR" {
-  description = "Блок адресов для приватной подсети"
-  type        = string
-  default     = "10.0.2.0/24"
+variable "YC_ZONES" {
+  default = ["ru-central1-a", "ru-central1-b"]
 }
 
 variable "platform_id" { default = "standard-v3" }
