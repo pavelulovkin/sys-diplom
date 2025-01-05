@@ -22,13 +22,13 @@ variable "NETWORK_NAME" {
   default     = "main-vpc"
 }
 
-variable "SUBNET_NAT" {
-  description = "Блок адресов для подсети NAT"
+variable "SUBNET_PUBLIC_CIDR" {
+  description = "Блок адресов для публичной подсети"
   type        = string
   default     = "10.0.1.0/24"
 }
 
-variable "SUBNET_PRIVATE" {
+variable "SUBNET_PRIVATE_CIDR" {
   description = "Блок адресов для приватной подсети"
   type        = string
   default     = "10.0.2.0/24"
