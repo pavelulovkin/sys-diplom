@@ -51,7 +51,7 @@ resource "yandex_alb_virtual_host" "virtual_host_web" {
 resource "yandex_alb_load_balancer" "load_balancer_web" {
   name               = "load-balancer-web"
   network_id         = yandex_vpc_network.network_cloud.id
-  security_group_ids = [yandex_vpc_security_group.rules_load_balancer.id, yandex_vpc_security_group.rules_internal.id] 
+  security_group_ids = [yandex_vpc_security_group.rule_load_balancer.id, yandex_vpc_security_group.rule_internal.id] 
   allocation_policy {
     location {
       zone_id   = var.YC_ZONES[0]
