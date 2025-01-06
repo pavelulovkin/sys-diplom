@@ -6,7 +6,7 @@ resource "yandex_vpc_security_group" "rule_bastion" {
   ingress {
     protocol       = "tcp"
     v4_cidr_blocks = ["0.0.0.0/0"]
-    port           = 2222
+    port           = 22
   }
 
   egress {
@@ -46,8 +46,14 @@ resource "yandex_vpc_security_group" "rule_internal" {
   network_id = yandex_vpc_network.network_cloud.id
 
   ingress {
+    protocol       = "tcp"
+    v4_cidr_blocks = ["10.0.0.0/24"]
+    port           = 22
+  }
+
+  ingress {
     protocol       = "any"
-    v4_cidr_blocks = ["10.0.0.0/24", "10.1.0.0/24", "10.2.0.0/16"]
+    v4_cidr_blocks = ["10.1.0.0/24", "10.2.0.0/16"]
   }
 
   egress {

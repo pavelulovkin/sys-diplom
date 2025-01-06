@@ -19,10 +19,11 @@ resource "yandex_compute_instance" "bastion" {
   }
   network_interface {
     subnet_id     = yandex_vpc_subnet.subnet_public.id
+    security_group_ids = ["yandex_vpc_security_group.rule_bastion.id"]
     nat           = true
   }
   metadata = {
-    user-data     = templatefile("${path.module}/user-data.tpl", {
+    user-data     = templatefile("${path.module}/user-data-bastion.tpl", {
       username    = "external"
       ssh_key     = file("./private/external.pub")
     })
