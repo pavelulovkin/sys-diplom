@@ -2,13 +2,29 @@
 resource "yandex_vpc_security_group" "rule_bastion" {
   name       = "rule-bastion"
   network_id = yandex_vpc_network.network_cloud.id
-
   ingress {
     protocol       = "tcp"
     v4_cidr_blocks = ["0.0.0.0/0"]
     port           = 22
   }
+  egress {
+    protocol       = "any"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+}
 
+resource "yandex_vpc_security_group" "rule_nat" {
+  name       = "rule-nat"
+  network_id = yandex_vpc_network.network_cloud.id
+
+  ingress {
+    protocol       = "tcp"
+    v4_cidr_blocks = ["10.0.0.0/8"]
+  }
+  ingress {
+    protocol       = "icmp"
+    v4_cidr_blocks = ["10.0.0.0/8"]
+  }
   egress {
     protocol       = "any"
     v4_cidr_blocks = ["0.0.0.0/0"]
@@ -23,39 +39,44 @@ resource "yandex_vpc_security_group" "rule_load_balancer" {
     protocol = "tcp"
     predefined_target = "loadbalancer_healthchecks"
   }
-
   ingress {
     protocol       = "tcp"
     v4_cidr_blocks = ["0.0.0.0/0"]
     port           = 80
   }
-
   ingress {
-    protocol       = "icmp"
+    protocol       = "tcp"
     v4_cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    protocol       = "any"
-    v4_cidr_blocks = ["0.0.0.0/0"]
+    port           = 443
   }
 }
-
+resource "yandex_vpc_security_group" "rule_web_server" {
+  name       = "rule-web-server"
+  network_id = yandex_vpc_network.network_cloud.id
+  ingress {
+    protocol       = "tcp"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    port           = 80
+  }
+  ingress {
+    protocol       = "tcp"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    port           = 443
+  }
+}
 resource "yandex_vpc_security_group" "rule_internal" {
   name       = "rule-internal"
   network_id = yandex_vpc_network.network_cloud.id
 
   ingress {
+    protocol       = "icmp"
+    v4_cidr_blocks = ["10.0.0.0/8"]
+  }
+  ingress {
     protocol       = "tcp"
     v4_cidr_blocks = ["10.0.0.0/24"]
     port           = 22
   }
-
-  ingress {
-    protocol       = "any"
-    v4_cidr_blocks = ["10.1.0.0/24", "10.2.0.0/16"]
-  }
-
   egress {
     protocol       = "any"
     v4_cidr_blocks = ["0.0.0.0/0"]

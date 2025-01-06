@@ -19,7 +19,7 @@ resource "yandex_compute_instance" "bastion" {
   }
   network_interface {
     subnet_id     = yandex_vpc_subnet.subnet_public.id
-    security_group_ids = ["yandex_vpc_security_group.rule_bastion.id"]
+    security_group_ids = [yandex_vpc_security_group.rule_bastion.id]
     nat           = true
   }
   metadata = {
@@ -29,7 +29,6 @@ resource "yandex_compute_instance" "bastion" {
     })
   }
 }
-
 resource "yandex_compute_instance" "web-server" {
   count           = 2
   name            = "web-server-${count.index + 1}"
@@ -52,9 +51,13 @@ resource "yandex_compute_instance" "web-server" {
   }
   network_interface {
     subnet_id     = yandex_vpc_subnet.subnet_private_web[count.index].id
+    security_group_ids = [yandex_vpc_security_group.rule_internal.id, yandex_vpc_security_group.rule_web_server.id]
   }
   metadata = {
-    ssh-keys      = "${file("./private/internal.pub")}"
+    user-data     = templatefile("${path.module}/user-data.tpl", {
+      username    = "internal"
+      ssh_key     = file("./private/internal.pub")
+    })
   }
 }
 
@@ -78,6 +81,13 @@ resource "yandex_compute_instance" "zabbix-web" {
   }
   network_interface {
     subnet_id     = yandex_vpc_subnet.subnet_public.id
+    security_group_ids = [yandex_vpc_security_group.rule_internal.id]
+  }
+  metadata = {
+    user-data     = templatefile("${path.module}/user-data.tpl", {
+      username    = "internal"
+      ssh_key     = file("./private/internal.pub")
+    })
   }
 }
 
@@ -102,6 +112,12 @@ resource "yandex_compute_instance" "zabbix-server" {
   network_interface {
     subnet_id     = yandex_vpc_subnet.subnet_public.id
   }
+  metadata = {
+    user-data     = templatefile("${path.module}/user-data.tpl", {
+      username    = "internal"
+      ssh_key     = file("./private/internal.pub")
+    })
+  }
 }
 
 resource "yandex_compute_instance" "kibana" {
@@ -124,6 +140,13 @@ resource "yandex_compute_instance" "kibana" {
   }
   network_interface {
     subnet_id     = yandex_vpc_subnet.subnet_public.id
+    security_group_ids = [yandex_vpc_security_group.rule_internal.id]
+  }
+  metadata = {
+    user-data     = templatefile("${path.module}/user-data.tpl", {
+      username    = "internal"
+      ssh_key     = file("./private/internal.pub")
+    })
   }
 }
 
@@ -147,5 +170,12 @@ resource "yandex_compute_instance" "elastic" {
   }
   network_interface {
     subnet_id     = yandex_vpc_subnet.subnet_private_elastic.id
+    security_group_ids = [yandex_vpc_security_group.rule_internal.id]
+  }
+  metadata = {
+    user-data     = templatefile("${path.module}/user-data.tpl", {
+      username    = "internal"
+      ssh_key     = file("./private/internal.pub")
+    })
   }
 }
