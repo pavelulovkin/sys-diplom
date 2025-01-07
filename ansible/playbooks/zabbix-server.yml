@@ -12,19 +12,20 @@
     - ../private/vars.yml
 
   tasks:
-#     - name: Скачать пакет zabbix release
-#       get_url:
-#         url: "https://repo.zabbix.com/zabbix/7.2/release/debian/pool/main/z/zabbix-release/zabbix-release_latest_7.2+debian12_all.deb"
-#         dest: "/tmp/zabbix-release_latest_7.2+debian12_all.deb"
+    - name: Скачать пакет zabbix release
+      get_url:
+        url: "https://repo.zabbix.com/zabbix/7.2/release/debian/pool/main/z/zabbix-release/zabbix-release_latest_7.2+debian12_all.deb"
+        dest: "/tmp/zabbix-release_latest_7.2+debian12_all.deb"
 
-#     - name: Установить пакет Zabbix release
-#       apt:
-#         deb: "/tmp/zabbix-release_latest_7.2+debian12_all.deb"
-#         state: present
+    - name: Установить пакет Zabbix release
+      apt:
+        deb: "/tmp/zabbix-release_latest_7.2+debian12_all.deb"
+        state: present
 
     - name: Установка требуемых пакетов
       apt:
         name:
+          - postgresql
           - zabbix-server-pgsql
           - zabbix-frontend-php
           - php8.2-pgsql
@@ -63,25 +64,27 @@
     - name: zabbix-server - пароль базы данных
       lineinfile:
         path: /etc/zabbix/zabbix_server.conf
-        regexp: "^#?\s*DBPassword="
+        regexp: "^#? DBPassword="
         line: "DBPassword={{ db_password }}"
+        backrefs: yes
 
     - name: zabbix-server - ip для прослушивания
       lineinfile:
         path: /etc/zabbix/zabbix_server.conf
-        regexp: "^#?\s*ListenIP="
+        regexp: "^#? ListenIP="
         line: "ListenIP={{ zabbix_internal_ip }}"
+        backrefs: yes
 
     - name: nginx - порт веб-интерфейса
       lineinfile:
         path: /etc/zabbix/nginx.conf
-        regexp: "^# listen "
+        regexp: "^#? *listen "
         line: "listen 80;"
 
     - name: nginx - имя сервера
       lineinfile:
         path: /etc/zabbix/nginx.conf
-        regexp: "^# server_name "
+        regexp: "^#? *server_name "
         line: "server_name _;"
 
 
