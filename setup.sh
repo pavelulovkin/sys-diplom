@@ -12,12 +12,10 @@ if [ -z "$BASTION_IP" ]; then
   exit 1
 fi
 
-# export ANSIBLE_SSH_ARGS="-o ProxyCommand='ssh -W %h:%p -q external@$BASTION_IP' "
-
 cd $ROOT_DIR/ansible
 cat > inventory.ini <<EOL
 [bastion-proxy]
-$BASTION_IP
+bastion.ru-central1.internal ansible_host=$BASTION_IP
 
 [bastion-proxy:vars]
 ansible_user=external
