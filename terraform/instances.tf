@@ -61,9 +61,9 @@ resource "yandex_compute_instance" "web-server" {
   }
 }
 
-resource "yandex_compute_instance" "zabbix-web" {
-  name            = "zabbix-web"
-  hostname        = "zabbix-web"
+resource "yandex_compute_instance" "zabbix" {
+  name            = "zabbix"
+  hostname        = "zabbix"
   platform_id     = var.platform_id
   scheduling_policy {
     preemptible   = var.scheduling_policy.preemptible
@@ -82,35 +82,6 @@ resource "yandex_compute_instance" "zabbix-web" {
   network_interface {
     subnet_id     = yandex_vpc_subnet.subnet_public.id
     security_group_ids = [yandex_vpc_security_group.rule_internal.id]
-  }
-  metadata = {
-    user-data     = templatefile("${path.module}/user-data.tpl", {
-      username    = "internal"
-      ssh_key     = file("./private/internal.pub")
-    })
-  }
-}
-
-resource "yandex_compute_instance" "zabbix-server" {
-  name            = "zabbix-server"
-  hostname        = "zabbix-server"
-  platform_id     = var.platform_id
-  scheduling_policy {
-    preemptible   = var.scheduling_policy.preemptible
-  }
-  resources {
-    cores         = var.instance_resources.cores
-    core_fraction = var.instance_resources.core_fraction
-    memory        = var.instance_resources.memory
-  }
-  boot_disk {
-    initialize_params {
-      image_id    = var.image_id
-      size        = var.disk_size
-    }
-  }
-  network_interface {
-    subnet_id     = yandex_vpc_subnet.subnet_public.id
   }
   metadata = {
     user-data     = templatefile("${path.module}/user-data.tpl", {

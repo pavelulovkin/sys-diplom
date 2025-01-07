@@ -13,24 +13,6 @@ resource "yandex_vpc_security_group" "rule_bastion" {
   }
 }
 
-resource "yandex_vpc_security_group" "rule_nat" {
-  name       = "rule-nat"
-  network_id = yandex_vpc_network.network_cloud.id
-
-  ingress {
-    protocol       = "tcp"
-    v4_cidr_blocks = ["10.0.0.0/8"]
-  }
-  ingress {
-    protocol       = "icmp"
-    v4_cidr_blocks = ["10.0.0.0/8"]
-  }
-  egress {
-    protocol       = "any"
-    v4_cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
 resource "yandex_vpc_security_group" "rule_load_balancer" {
   name       = "rule-load-balancer"
   network_id = yandex_vpc_network.network_cloud.id
