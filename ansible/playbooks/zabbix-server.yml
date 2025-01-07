@@ -1,0 +1,112 @@
+---
+- name: Установка и настройка zabbix-server + postgresql
+  hosts: zabbix.ru-central1.internal
+  become: yes
+  vars:
+    zabbix_version: "7.2"
+    db_name: "zabbix"
+    db_user: "zabbix"
+    zabbix_admin_user: "zabbix"
+    zabbix_server_name: "zabbix.sys34-ulovkinp.run.place"
+  vars_files:
+    - ../private/vars.yml
+
+  tasks:
+#     - name: Скачать пакет zabbix release
+#       get_url:
+#         url: "https://repo.zabbix.com/zabbix/7.2/release/debian/pool/main/z/zabbix-release/zabbix-release_latest_7.2+debian12_all.deb"
+#         dest: "/tmp/zabbix-release_latest_7.2+debian12_all.deb"
+
+#     - name: Установить пакет Zabbix release
+#       apt:
+#         deb: "/tmp/zabbix-release_latest_7.2+debian12_all.deb"
+#         state: present
+
+    - name: Установка требуемых пакетов
+      apt:
+        name:
+          - zabbix-server-pgsql
+          - zabbix-frontend-php
+          - php8.2-pgsql
+          - zabbix-nginx-conf
+          - zabbix-sql-scripts
+          - python3-psycopg2
+          - acl
+        state: present
+        update_cache: yes
+
+    - name: Проверка состояния postgresql
+      service:
+        name: postgresql
+        state: started
+        enabled: yes
+
+    - name: Настройка PostgreSQL
+      become: true
+      become_user: postgres
+      block:
+        - name: Создание базы данных
+          postgresql_db:
+            name: "{{ db_name }}"
+            state: present
+
+        - name: Создание пользователя базы данных
+          postgresql_user:
+            name: "{{ db_user }}"
+            password: "{{ db_password }}"
+            db: "{{ db_name }}"
+            state: present
+
+    - name: Импорт схемы в базу данных
+      shell: "zcat /usr/share/zabbix/sql-scripts/postgresql/server.sql.gz | sudo -u zabbix psql zabbix"
+
+    - name: zabbix-server - пароль базы данных
+      lineinfile:
+        path: /etc/zabbix/zabbix_server.conf
+        regexp: "^#?\s*DBPassword="
+        line: "DBPassword={{ db_password }}"
+
+    - name: zabbix-server - ip для прослушивания
+      lineinfile:
+        path: /etc/zabbix/zabbix_server.conf
+        regexp: "^#?\s*ListenIP="
+        line: "ListenIP={{ zabbix_internal_ip }}"
+
+    - name: nginx - порт веб-интерфейса
+      lineinfile:
+        path: /etc/zabbix/nginx.conf
+        regexp: "^# listen "
+        line: "listen 80;"
+
+    - name: nginx - имя сервера
+      lineinfile:
+        path: /etc/zabbix/nginx.conf
+        regexp: "^# server_name "
+        line: "server_name _;"
+
+
+# listen
+
+    # - name: Активация конфигурации nginx
+    #   command: "ln -s /etc/nginx/sites-available/zabbix /etc/nginx/sites-enabled/"
+
+    # - name: Перезапуск nginx
+    #   service:
+    #     name: nginx
+    #     state: restarted
+
+    # - name: Перезапуск zabbix server
+    #   service:
+    #     name: zabbix-server
+    #     state: started
+    #     enabled: yes
+
+    # - name: Перезапуск zabbix-agent2
+    #   service:
+    #     name: zabbix-agent2
+    #     state: started
+    #     enabled: yes
+
+    # - name: Настройка пользователя zabbix
+    #   command: >
+    #     curl -X POST -d "name={{ zabbix_admin_user }}&password={{ zabbix_admin_password }}" http://{{ zabbix_server_ip }}/zabbix/api_jsonrpc.php

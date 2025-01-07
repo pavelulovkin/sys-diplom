@@ -1,0 +1,65 @@
+---
+- name: Установка zabbix-agent2
+  hosts: all
+  become: yes
+  vars:
+    zabbix_server: "zabbix.ru-central1.internal"
+    zabbix_agent_config: "/etc/zabbix/zabbix_agent2.conf"
+
+  tasks:
+    - name: Скачать пакет zabbix release
+      get_url:
+        url: "https://repo.zabbix.com/zabbix/7.2/release/debian/pool/main/z/zabbix-release/zabbix-release_latest_7.2+debian12_all.deb"
+        dest: "/tmp/zabbix-release_latest_7.2+debian12_all.deb"
+
+    - name: Установить пакет Zabbix release
+      apt:
+        deb: "/tmp/zabbix-release_latest_7.2+debian12_all.deb"
+        state: present
+
+    - name: Обновить репозиторий apt
+      apt:
+        update_cache: yes
+
+    - name: Установить zabbix-agent2
+      apt:
+        name:
+          - zabbix-agent2
+          - zabbix-agent2-plugin-*
+        state: present
+
+    - name: Обновить конфигурацию zabbix-agent2
+      block:
+        - name: Указать сервер Zabbix
+          lineinfile:
+            path: "{{ zabbix_agent_config }}"
+            regexp: '^Server='
+            line: "Server={{ zabbix_server }}"
+            state: present
+
+        - name: Указать активный сервер Zabbix
+          lineinfile:
+            path: "{{ zabbix_agent_config }}"
+            regexp: '^ServerActive='
+            line: "ServerActive={{ zabbix_server }}"
+            state: present
+
+        - name: Указать параметр Hostname
+          lineinfile:
+            path: "{{ zabbix_agent_config }}"
+            regexp: '^Hostname='
+            line: "Hostname=system.hostname"
+            state: present
+
+        - name: Установить путь для логов
+          lineinfile:
+            path: "{{ zabbix_agent_config }}"
+            regexp: '^LogFile='
+            line: "LogFile=/var/log/zabbix/zabbix_agentd.log"
+            state: present
+
+    - name: Перезапустить сервис zabbix-agent2
+      systemd:
+        name: zabbix-agent2
+        state: restarted
+        enabled: yes
