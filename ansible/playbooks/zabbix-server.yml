@@ -46,20 +46,20 @@
       become: true
       become_user: postgres
       block:
-        - name: Создание базы данных
-          postgresql_db:
-            name: "{{ db_name }}"
-            state: present
-
         - name: Создание пользователя базы данных
           postgresql_user:
             name: "{{ db_user }}"
             password: "{{ db_password }}"
-            db: "{{ db_name }}"
             state: present
 
-    - name: Импорт схемы в базу данных
-      shell: "zcat /usr/share/zabbix/sql-scripts/postgresql/server.sql.gz | sudo -u zabbix psql zabbix"
+        - name: Создание базы данных
+          postgresql_db:
+            name: "{{ db_name }}"
+            owner: "{{ db_user }}"
+            state: present
+
+        - name: Импорт схемы в базу данных
+          shell: "zcat /usr/share/zabbix/sql-scripts/postgresql/server.sql.gz | sudo psql zabbix"
 
     - name: zabbix-server - пароль базы данных
       lineinfile:

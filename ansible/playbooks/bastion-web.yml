@@ -1,0 +1,33 @@
+- name: Install and configure NGINX
+  hosts: bastion.ru-central1.internal
+  become: yes
+  tasks:
+    - name: Install NGINX
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Copy custom NGINX configuration file
+      copy:
+        src: ../templates/bastion-web.conf.j2
+        dest: /etc/nginx/sites-available/bastion-web.conf
+        mode: '0644'
+
+    - name: Create a symlink in sites-enabled
+      file:
+        src: /etc/nginx/sites-available/bastion-web.conf
+        dest: /etc/nginx/sites-enabled/bastion-web.conf
+        state: link
+
+    - name: Remove default site from sites-enabled
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      ignore_errors: yes
+
+    - name: Enable and start NGINX service
+      systemd:
+        name: nginx
+        enabled: yes
+        state: started

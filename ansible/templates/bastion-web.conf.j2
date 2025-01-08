@@ -1,48 +1,42 @@
-http {
-    include       mime.types;
-    default_type  application/octet-stream;
+server {
+    listen 80;
+    server_name zabbix.sys34-ulovkinp.run.place kibana.sys34-ulovkinp.run.place;
 
-    access_log  /var/log/nginx/access.log;
-    error_log   /var/log/nginx/error.log;
+    return 301 https://$host$request_uri;
+}
 
-    server {
-        listen 80;
-        server_name zabbix.sys34-ulovkinp.run.place kibana.sys34-ulovkinp.run.place;
+server {
+    listen 443 ssl;
+    server_name _
+    ; server_name zabbix.sys34-ulovkinp.run.place;
 
-        return 301 https://$host$request_uri;
+    ssl_certificate /etc/letsencrypt/live/zabbix.sys34-ulovkinp.run.place/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/zabbix.sys34-ulovkinp.run.place/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    location / {
+        proxy_pass http://zabbix.ru-central1.internal;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
+}
 
-    server {
-        listen 443 ssl;
-        server_name zabbix.sys34-ulovkinp.run.place;
+server {
+    listen 443 ssl;
+    server_name _
+    ; server_name kibana.sys34-ulovkinp.run.place;
 
-        ssl_certificate /etc/letsencrypt/live/zabbix.sys34-ulovkinp.run.place/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/zabbix.sys34-ulovkinp.run.place/privkey.pem;
-        ssl_protocols TLSv1.2 TLSv1.3;
-        ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_certificate /etc/letsencrypt/live/kibana.sys34-ulovkinp.run.place/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/kibana.sys34-ulovkinp.run.place/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
 
-        location / {
-            proxy_pass http://zabbix-web.ru-central1.internal;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        }
-    }
-
-    server {
-        listen 443 ssl;
-        server_name kibana.sys34-ulovkinp.run.place;
-
-        ssl_certificate /etc/letsencrypt/live/kibana.sys34-ulovkinp.run.place/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/kibana.sys34-ulovkinp.run.place/privkey.pem;
-        ssl_protocols TLSv1.2 TLSv1.3;
-        ssl_ciphers HIGH:!aNULL:!MD5;
-
-        location / {
-            proxy_pass http://web.ru-central1.internal;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        }
+    location / {
+        proxy_pass http://kibana.ru-central1.internal;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 }

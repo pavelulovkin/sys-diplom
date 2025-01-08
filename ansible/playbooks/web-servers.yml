@@ -1,0 +1,60 @@
+- name: Установка и настройка сайта
+  hosts: 
+    - web-server-1.ru-central1.internal
+    - web-server-2.ru-central1.internal
+  become: yes
+  tasks:
+    - name: Установка nginx
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+
+    - name: Создание каталога для сайта
+      file:
+        path: /var/www/website
+        state: directory
+        mode: '0755'
+
+    - name: Копирование архива с контентом сайта
+      copy:
+        src: ../files/website.tar
+        dest: /var/www/website/website.tar
+
+    - name: Извлечение содержимого архива
+      unarchive:
+        src: /var/www/website/website.tar
+        dest: /var/www/website/
+        remote_src: yes
+
+    - name: Установка прав для файлов сайта
+      file:
+        path: /var/www/website
+        state: directory
+        owner: www-data
+        group: www-data
+        recurse: yes
+
+    - name: Копирование конфигурационного файла
+      copy:
+        src: ../templates/website.conf.j2
+        dest: /etc/nginx/sites-available/website.conf
+        mode: '0644'
+
+    - name: Создание ссылки в sites-enabled
+      file:
+        src: /etc/nginx/sites-available/website.conf
+        dest: /etc/nginx/sites-enabled/website.conf
+        state: link
+
+    - name: Удаление сайта default
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+      ignore_errors: yes
+
+    - name: Перезапуск nginx
+      systemd:
+        name: nginx
+        enabled: yes
+        state: restarted

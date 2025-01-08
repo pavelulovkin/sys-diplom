@@ -59,16 +59,20 @@ resource "yandex_alb_load_balancer" "load_balancer_web" {
     }
   }
   listener {
-    name = "listener-web"
+    name = "listener-https"
     endpoint {
       address {
-        external_ipv4_address {}
+        external_ipv4_address {
+        }
       }
-      ports = [80]
+      ports = [443]
     }
-    http {
-      handler {
-        http_router_id = yandex_alb_http_router.router_web.id
+    tls {
+      default_handler {
+        http_handler {
+          http_router_id = yandex_alb_http_router.router_web.id
+        }
+        certificate_ids = ["fpqg1aluem34hc95kddr"]
       }
     }
   }

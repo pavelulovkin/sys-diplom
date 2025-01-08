@@ -64,3 +64,14 @@ resource "yandex_vpc_security_group" "rule_internal" {
     v4_cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+resource "yandex_vpc_security_group" "rule_monitoring_web" {
+  name       = "rule-monitoring-web"
+  network_id = yandex_vpc_network.network_cloud.id
+
+  ingress {
+    protocol       = "tcp"
+    v4_cidr_blocks = ["10.0.0.0/24"]
+    port           = 80
+  }
+}
