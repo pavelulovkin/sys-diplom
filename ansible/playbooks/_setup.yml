@@ -79,38 +79,3 @@
           src: templates/zabbix_server.conf.j2
           dest: /etc/zabbix/zabbix_server.conf
 
-  - name: Install Kibana
-    hosts: kibana
-    tasks:
-      - name: Install Kibana
-        apt:
-          name: kibana
-          state: present
-
-      - name: Configure Kibana
-        template:
-          src: templates/kibana.yml.j2
-          dest: /etc/kibana/kibana.yml
-
-      - name: Restart Kibana
-        service:
-          name: kibana
-          state: restarted
-
-  - name: Install Elasticsearch
-    hosts: elastic
-    tasks:
-      - name: Install Elasticsearch
-        apt:
-          name: elasticsearch
-          state: present
-
-      - name: Configure Elasticsearch
-        template:
-          src: templates/elasticsearch.yml.j2
-          dest: /etc/elasticsearch/elasticsearch.yml
-
-      - name: Restart Elasticsearch
-        service:
-          name: elasticsearch
-          state: restarted

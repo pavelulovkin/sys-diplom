@@ -1,0 +1,17 @@
+  - name: Install Kibana
+    hosts: kibana
+    tasks:
+      - name: Install Kibana
+        apt:
+          name: kibana
+          state: present
+
+      - name: Configure Kibana
+        template:
+          src: templates/kibana.yml.j2
+          dest: /etc/kibana/kibana.yml
+
+      - name: Restart Kibana
+        service:
+          name: kibana
+          state: restarted

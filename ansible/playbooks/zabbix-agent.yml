@@ -5,6 +5,7 @@
   vars:
     zabbix_server: "zabbix.ru-central1.internal"
     zabbix_agent_config: "/etc/zabbix/zabbix_agent2.conf"
+    host_metadata: "managed-host"
 
   tasks:
     - name: Скачать пакет zabbix release
@@ -25,7 +26,6 @@
       apt:
         name:
           - zabbix-agent2
-          - zabbix-agent2-plugin-*
         state: present
 
     - name: Обновить конфигурацию zabbix-agent2
@@ -47,8 +47,15 @@
         - name: Указать параметр Hostname
           lineinfile:
             path: "{{ zabbix_agent_config }}"
-            regexp: '^Hostname='
-            line: "Hostname=system.hostname"
+            regexp: '^#? ?HostnameItem='
+            line: "HostnameItem=system.hostname"
+            state: present
+
+        - name: Указать параметр Metadata
+          lineinfile:
+            path: "{{ zabbix_agent_config }}"
+            regexp: '^#? ?HostMetadata='
+            line: "HostMetadata={{ host_metadata }}"
             state: present
 
         - name: Установить путь для логов
