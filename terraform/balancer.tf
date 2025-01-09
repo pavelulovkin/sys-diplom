@@ -85,10 +85,27 @@ resource "yandex_alb_load_balancer" "load_balancer_web" {
     }
   }
   listener {
+    name = "http-to-https"
+    endpoint {
+      address {
+        external_ipv4_address {
+          address = yandex_vpc_address.external_alb_address.external_ipv4_address[0].address
+        }
+      }
+      ports = [80]
+    }
+    http {
+      redirects {
+        http_to_https = true
+      }
+    }
+  }
+  listener {
     name = "listener-https"
     endpoint {
       address {
         external_ipv4_address {
+          address = yandex_vpc_address.external_alb_address.external_ipv4_address[0].address
         }
       }
       ports = [443]

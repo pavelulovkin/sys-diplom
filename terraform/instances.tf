@@ -76,12 +76,12 @@ resource "yandex_compute_instance" "zabbix" {
   boot_disk {
     initialize_params {
       image_id    = var.image_id
-      size        = var.disk_size
+      size        = 20 #var.disk_size
     }
   }
   network_interface {
     subnet_id     = yandex_vpc_subnet.subnet_public.id
-    security_group_ids = [yandex_vpc_security_group.rule_internal.id, yandex_vpc_security_group.rule_monitoring_web.id]
+    security_group_ids = [yandex_vpc_security_group.rule_internal.id, yandex_vpc_security_group.rule_internal_web.id]
   }
   metadata = {
     user-data     = templatefile("${path.module}/user-data.tpl", {
@@ -111,7 +111,7 @@ resource "yandex_compute_instance" "kibana" {
   }
   network_interface {
     subnet_id     = yandex_vpc_subnet.subnet_public.id
-    security_group_ids = [yandex_vpc_security_group.rule_internal.id, yandex_vpc_security_group.rule_monitoring_web.id]
+    security_group_ids = [yandex_vpc_security_group.rule_internal.id, yandex_vpc_security_group.rule_internal_web.id]
   }
   metadata = {
     user-data     = templatefile("${path.module}/user-data.tpl", {
@@ -136,7 +136,7 @@ resource "yandex_compute_instance" "elastic" {
   boot_disk {
     initialize_params {
       image_id    = var.image_id
-      size        = var.disk_size
+      size        = 20 #var.disk_size
     }
   }
   network_interface {

@@ -36,3 +36,10 @@ resource "yandex_vpc_route_table" "nat_route" {
     gateway_id   = yandex_vpc_gateway.nat_gateway.id
   }
 }
+
+resource "yandex_vpc_address" "external_alb_address" { 
+  name = "external-alb-address"
+  external_ipv4_address {
+    zone_id = var.YC_ZONES[0]
+  }
+}

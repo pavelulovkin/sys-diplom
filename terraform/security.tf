@@ -77,8 +77,8 @@ resource "yandex_vpc_security_group" "rule_internal" {
   }
 }
 
-resource "yandex_vpc_security_group" "rule_monitoring_web" {
-  name       = "rule-monitoring-web"
+resource "yandex_vpc_security_group" "rule_internal_web" {
+  name       = "rule-internal-web"
   network_id = yandex_vpc_network.network_cloud.id
   ingress {
     protocol       = "tcp"
