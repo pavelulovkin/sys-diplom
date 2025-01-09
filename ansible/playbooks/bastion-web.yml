@@ -22,14 +22,14 @@
 
     - name: Copy certs
       copy:
-        src: ../files/private/selfsigned.crt
-        dest: /etc/nginx/ssl/selfsigned.crt
+        src: ../files/private/fullchain.cer
+        dest: /etc/nginx/ssl/fullchain.cer
         mode: '0600'
 
     - name: Copy certs
       copy:
-        src: ../files/private/selfsigned.key
-        dest: /etc/nginx/ssl/selfsigned.key
+        src: ../files/private/sys34-ulovkinp.run.place.key
+        dest: /etc/nginx/ssl/sys34-ulovkinp.run.place.key
         mode: '0600'
 
     - name: Create a symlink in sites-enabled

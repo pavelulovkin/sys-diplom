@@ -1,5 +1,5 @@
 ---
-# - import_playbook: zabbix-agent.yml
+- import_playbook: zabbix-agent.yml
 - import_playbook: zabbix-server.yml
-# - import_playbook: web-servers.yml
-# - import_playbook: bastion-web.yml
+- import_playbook: web-servers.yml
+- import_playbook: bastion-web.yml

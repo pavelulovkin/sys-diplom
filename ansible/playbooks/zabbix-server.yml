@@ -88,9 +88,11 @@
 
 
     - name: Активация конфигурации nginx
-      command: "ln -s /etc/zabbix/nginx.conf /etc/nginx/sites-enabled/"
-      ignore_errors: yes
-      
+      file:
+        src: /etc/zabbix/nginx.conf
+        dest: /etc/nginx/sites-enabled/nginx.conf
+        state: link
+
     - name: Удаление сайта default
       file:
         path: /etc/nginx/sites-enabled/default
