@@ -1,17 +1,41 @@
-  - name: Install Elasticsearch
-    hosts: elastic
-    tasks:
-      - name: Install Elasticsearch
-        apt:
-          name: elasticsearch
-          state: present
+- name: Установка и настройка elasticsearch
+  hosts: elastic.ru-central1.internal
 
-      - name: Configure Elasticsearch
-        template:
-          src: templates/elasticsearch.yml.j2
-          dest: /etc/elasticsearch/elasticsearch.yml
+  tasks:
 
-      - name: Restart Elasticsearch
-        service:
-          name: elasticsearch
-          state: restarted
+    - name: Копирование пакета .deb
+      copy:
+        src: ../files/large/elasticsearch-8.17.0-amd64.deb
+        dest: /tmp/elasticsearch.deb
+
+    - name: Установка пакета .deb
+      apt:
+        deb: /tmp/elasticsearch.deb
+        state: present
+
+    - name: Удаление файла пакета .deb
+      file:
+        path: /tmp/elasticsearch.deb
+        state: absent
+
+    # - name: Конфигурация kibana
+    #   block:
+    #     - name: Указать порт прослушивания Kibana
+    #       lineinfile:
+    #         path: "{{ kibana_config }}"
+    #         regexp: '^#?server.port: '
+    #         line: "server.port: {{ kibana_server_port }}"
+    #         state: present
+
+    #     - name: Указать интерфейс прослушивания Kibana
+    #       lineinfile:
+    #         path: "{{ kibana_config }}"
+    #         regexp: '^#?server.host: '
+    #         line: "server.host: {{ host_interface_ip }}"
+    #         state: present
+
+    - name: Перезапуск сервиса elasticsearch
+      systemd:
+        name: elasticsearch
+        state: restarted
+        enabled: yes

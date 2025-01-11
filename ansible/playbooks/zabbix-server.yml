@@ -117,6 +117,73 @@
         state: started
         enabled: yes
 
-    - name: Настройка пользователя zabbix
-      command: >
-        curl -X POST -d "name={{ zabbix_admin_user }}&password={{ zabbix_admin_password }}" http://{{ zabbix_internal_ip }}/zabbix/api_jsonrpc.php
+---
+- name: Add autoregistration rule in Zabbix
+  hosts: localhost
+  gather_facts: no
+  vars:
+    zabbix_url: "http://your-zabbix-server/zabbix/api_jsonrpc.php"
+    zabbix_user: "Admin"
+    zabbix_password: "zabbix"
+    rule_name: "Auto registration rule"
+    group_id: "2"  # ID группы, куда будут добавляться хосты
+    template_id: "10001"  # ID шаблона, который будет привязан к хосту
+    condition_value: "Linux"  # Условие фильтрации по имени ОС
+
+  tasks:
+    - name: Authenticate to Zabbix API
+      uri:
+        url: "{{ zabbix_url }}"
+        method: POST
+        body:
+          jsonrpc: "2.0"
+          method: "user.login"
+          params:
+            user: "{{ zabbix_user }}"
+            password: "{{ zabbix_password }}"
+          id: 1
+        body_format: json
+        return_content: yes
+      register: auth_response
+
+    - name: Extract auth token
+      set_fact:
+        zabbix_auth_token: "{{ auth_response.json.result }}"
+
+    - name: Create autoregistration rule
+      uri:
+        url: "{{ zabbix_url }}"
+        method: POST
+        body:
+          jsonrpc: "2.0"
+          method: "action.create"
+          params:
+            name: "{{ rule_name }}"
+            eventsource: 2
+            status: 0
+            esc_period: "0s"
+            def_shortdata: "Auto-registration: {HOST.HOST}"
+            def_longdata: "A new host has been registered: {HOST.HOST}"
+            filter:
+              evaltype: 0
+              conditions:
+                - conditiontype: 24
+                  operator: 2
+                  value: "{{ condition_value }}"
+            operations:
+              - operationtype: 2
+                opgroup:
+                  - groupid: "{{ group_id }}"
+              - operationtype: 4
+                optemplate:
+                  - templateid: "{{ template_id }}"
+          auth: "{{ zabbix_auth_token }}"
+          id: 2
+        body_format: json
+        return_content: yes
+      register: create_action_response
+
+    - name: Show result
+      debug:
+        msg: "Autoregistration rule created with ID: {{ create_action_response.json.result.actionids[0] }}"
+
