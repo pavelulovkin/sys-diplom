@@ -1,5 +1,5 @@
 ---
-- name: Add autoregistration rule in Zabbix
+- name: Add autoregistration rule in Zabbix for Linux servers
   gather_facts: no
   hosts:
     - zabbix.ru-central1.internal
@@ -20,26 +20,36 @@
         return_content: yes
       register: auth_response
 
-    - name: Set authentication token
+    - name: Extract auth token
       set_fact:
         zabbix_auth_token: "{{ auth_response.json.result }}"
 
-    - name: Create autoregistration action
-      community.zabbix.zabbix_action:
-        http_login_user: "{{ zabbix_user }}"
-        http_login_password: "{{ zabbix_password }}"
-        name: "{{ rule_name }}"
-        event_source: auto_registration
-        status: enabled
-        conditions:
-          - type: host_metadata
-            operator: equals
-            value: "{{ host_metadata }}"
-        operations:
-          - type: add_to_host_group
-            host_groups:
-              - "{{ group_name }}"
-          - type: link_to_template
-            templates:
-              - "{{ template_name }}"
-        state: present
+    - name: Create autoregistration action for Linux servers
+      uri:
+        url: "{{ zabbix_url }}"
+        method: POST
+        body:
+          jsonrpc: "2.0"
+          method: "action.create"
+          params:
+            name: "Register Linux servers"
+            eventsource: "2"
+            filter:
+              evaltype: "2"
+              conditions:
+                - conditiontype: "24"
+                  operator: "2"
+                  value: "managed-host"
+            operations:
+              - operationtype: "4"
+                opgroup:
+                  - groupid: "2"
+        headers:
+          Authorization: "Bearer {{ zabbix_auth_token }}"
+        body_format: json
+        return_content: yes
+      register: action_create_response
+
+    - name: Show action creation response
+      debug:
+        msg: "{{ action_create_response }}"

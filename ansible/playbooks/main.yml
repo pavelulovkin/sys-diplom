@@ -11,29 +11,23 @@
 
 # - import_playbook: zabbix-server.yml
 
-- import_playbook: web-servers.yml
+# - import_playbook: web-servers.yml
 
-- import_playbook: bastion-web.yml
+# - import_playbook: bastion-web.yml
 
 - import_playbook: zabbix-server-api.yml
   vars:
+    zabbix_url: "http://localhost/api_jsonrpc.php"
     zabbix_user: "Admin"
     zabbix_password: "zabbix"
     rule_name: "Auto registration for managed hosts"
     host_metadata: "managed-host"
     group_name: "Linux Servers"
     template_name: "Linux by Zabbix agent"
-    ansible_network_os: community.zabbix.zabbix
-    ansible_connection: httpapi
-    ansible_httpapi_port: 443
-    ansible_httpapi_use_ssl: true
-    ansible_httpapi_validate_certs: false
-    ansible_zabbix_url_path: ""
-    ansible_host: zabbix.sys34-ulovkinp.run.place
 
-- import_playbook: kibana.yml
-  vars:
-    kibana_config: /etc/kibana/kibana.yml
-    kibana_server_port: "5601"
+# - import_playbook: kibana.yml
+#   vars:
+#     kibana_config: /etc/kibana/kibana.yml
+#     kibana_server_port: "5601"
 
-- import_playbook: elasticsearch.yml
+# - import_playbook: elasticsearch.yml
