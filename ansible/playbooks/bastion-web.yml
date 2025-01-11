@@ -1,14 +1,14 @@
-- name: Install and configure NGINX
+- name: Установка и настройка
   hosts: bastion.ru-central1.internal
   become: yes
   tasks:
-    - name: Install NGINX
+    - name: Установка nginx
       apt:
         name: nginx
         state: present
         update_cache: yes
 
-    - name: Copy custom NGINX configuration file
+    - name: Копирование файла конфигурации
       copy:
         src: ../templates/bastion-web.conf.j2
         dest: /etc/nginx/sites-available/bastion-web.conf
@@ -20,32 +20,36 @@
         state: directory
         mode: '0755'
 
-    - name: Copy certs
+    - name: Копирование сертификата
       copy:
         src: ../files/private/fullchain.cer
         dest: /etc/nginx/ssl/fullchain.cer
+        owner: www-data
+        group: www-data
         mode: '0600'
 
-    - name: Copy certs
+    - name: Копирование ключа
       copy:
         src: ../files/private/sys34-ulovkinp.run.place.key
         dest: /etc/nginx/ssl/sys34-ulovkinp.run.place.key
+        owner: www-data
+        group: www-data
         mode: '0600'
 
-    - name: Create a symlink in sites-enabled
+    - name: Создание сим-линка в sites-enabled
       file:
         src: /etc/nginx/sites-available/bastion-web.conf
         dest: /etc/nginx/sites-enabled/bastion-web.conf
         state: link
 
-    - name: Remove default site from sites-enabled
+    - name: Удаление сайта по умолчанию
       file:
         path: /etc/nginx/sites-enabled/default
         state: absent
       ignore_errors: yes
 
-    - name: Enable and start NGINX service
+    - name: Запуск сервиса nginx
       systemd:
         name: nginx
         enabled: yes
-        state: started
+        state: restarted

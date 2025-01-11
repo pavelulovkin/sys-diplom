@@ -11,6 +11,11 @@ resource "yandex_vpc_security_group" "rule_bastion" {
     v4_cidr_blocks = ["0.0.0.0/0"]
     port           = 22
   }
+  ingress {
+    protocol       = "tcp"
+    v4_cidr_blocks = ["10.0.0.0/24"]
+    port   = 10050
+  }
   egress {
     protocol       = "any"
     v4_cidr_blocks = ["0.0.0.0/0"]
@@ -63,11 +68,12 @@ resource "yandex_vpc_security_group" "rule_internal" {
   ingress {
     protocol       = "tcp"
     v4_cidr_blocks = ["10.0.0.0/24"]
+
     port           = 22
   }
   ingress {
     protocol       = "tcp"
-    v4_cidr_blocks = ["10.0.0.0/24"]
+    v4_cidr_blocks = ["10.0.0.0/8"]
     from_port   = 10050
     to_port     = 10051
   }

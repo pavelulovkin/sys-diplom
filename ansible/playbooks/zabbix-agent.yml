@@ -8,6 +8,10 @@
     host_metadata: "managed-host"
 
   tasks:
+    - name: Find IP in the 10.X.X.X subnet
+      set_fact:
+        host_interface_ip: "{{ ansible_all_ipv4_addresses | select('search', '^10\\.') | list | first }}"
+        
     - name: Скачать пакет zabbix release
       get_url:
         url: "https://repo.zabbix.com/zabbix/7.2/release/debian/pool/main/z/zabbix-release/zabbix-release_latest_7.2+debian12_all.deb"
@@ -44,7 +48,14 @@
             line: "ServerActive={{ zabbix_server }}"
             state: present
 
-        - name: Указать параметр Hostname
+        - name: Исключить параметр Hostname
+          lineinfile:
+            path: "{{ zabbix_agent_config }}"
+            regexp: 'Hostname='
+            line: "#Hostname="
+            state: present
+
+        - name: Указать параметр HostnameItem
           lineinfile:
             path: "{{ zabbix_agent_config }}"
             regexp: '^#? ?HostnameItem='
@@ -56,6 +67,13 @@
             path: "{{ zabbix_agent_config }}"
             regexp: '^#? ?HostMetadata='
             line: "HostMetadata={{ host_metadata }}"
+            state: present
+
+        - name: Указать параметр HostInterface
+          lineinfile:
+            path: "{{ zabbix_agent_config }}"
+            regexp: '^#? ?HostInterface='
+            line: "HostInterface={{ host_interface_ip }}"
             state: present
 
         - name: Установить путь для логов

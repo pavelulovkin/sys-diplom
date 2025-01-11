@@ -8,7 +8,7 @@ server {
     listen 443 ssl;
     server_name zabbix.sys34-ulovkinp.run.place;
 
-    ssl_certificate /etc/nginx/ssl/fullchain.crt;
+    ssl_certificate /etc/nginx/ssl/fullchain.cer;
     ssl_certificate_key /etc/nginx/ssl/sys34-ulovkinp.run.place.key;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
@@ -25,7 +25,7 @@ server {
     listen 443 ssl;
     server_name kibana.sys34-ulovkinp.run.place;
 
-    ssl_certificate /etc/nginx/ssl/fullchain.crt;
+    ssl_certificate /etc/nginx/ssl/fullchain.cer;
     ssl_certificate_key /etc/nginx/ssl/sys34-ulovkinp.run.place.key;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!MD5;
