@@ -1,17 +1,44 @@
-  - name: Install Kibana
-    hosts: kibana
-    tasks:
-      - name: Install Kibana
-        apt:
-          name: kibana
-          state: present
+- name: Установка и настройка kibana
+  hosts: kibana.ru-central1.internal
 
-      - name: Configure Kibana
-        template:
-          src: templates/kibana.yml.j2
-          dest: /etc/kibana/kibana.yml
+  tasks:
+    - name: Определение внутреннего IP хоста
+      set_fact:
+        host_interface_ip: "{{ ansible_all_ipv4_addresses | select('search', '^10\\.') | list | first }}"
 
-      - name: Restart Kibana
-        service:
-          name: kibana
-          state: restarted
+    - name: Копирование пакета .deb
+      copy:
+        src: ../files/large/kibana-8.17.0-amd64.deb
+        dest: /tmp/kibana.deb
+
+    - name: Установка пакета .deb
+      apt:
+        deb: /tmp/kibana.deb
+        state: present
+
+    - name: Удаление файла пакета .deb
+      file:
+        path: /tmp/kibana.deb
+        state: absent
+
+    - name: Конфигурация kibana
+      block:
+        - name: Указать порт прослушивания Kibana
+          lineinfile:
+            path: "{{ kibana_config }}"
+            regexp: '^#?server.port: '
+            line: "server.port: {{ kibana_server_port }}"
+            state: present
+
+        - name: Указать интерфейс прослушивания Kibana
+          lineinfile:
+            path: "{{ kibana_config }}"
+            regexp: '^#?server.host: '
+            line: "server.host: {{ host_interface_ip }}"
+            state: present
+
+    - name: Перезапуск сервиса Kibana
+      systemd:
+        name: kibana
+        state: restarted
+        enabled: yes

@@ -21,18 +21,9 @@ if [ -z "$ZABBIX_INTERNAL_IP" ]; then
   exit 1
 fi
 
-# cd $ROOT_DIR/ansible
-# sed "s/BASTION_IP/$BASTION_IP/g" ./templates/inventory_template.ini > ./inventory.ini
-# sed -i "s/^zabbix_internal_ip:.*/zabbix_internal_ip: \"$ZABBIX_INTERNAL_IP\"/" ./private/vars.yml
-
-# export ANSIBLE_CONFIG="./ansible.cfg"
-
-# ansible-playbook -i ./inventory.ini ./playbooks/main.yml -e ansible_remote_tmp=/tmp/.ansible/tmp
-
 dns_records['sys34-ulovkinp.run.place']=$BALANCER_IP
 dns_records['zabbix.sys34-ulovkinp.run.place']=$BASTION_IP
 dns_records['kibana.sys34-ulovkinp.run.place']=$BASTION_IP
-
 
 cd $ROOT_DIR
 for NAME in "${!dns_records[@]}"; do
@@ -50,3 +41,12 @@ EOF
     cat ./update.json
     curl "https://api.dnsexit.com/dns/ud/?apikey=$API_KEY&host=$NAME&ip=$IP"
 done
+
+cd $ROOT_DIR/ansible
+sed "s/BASTION_IP/$BASTION_IP/g" ./templates/inventory_template.ini > ./inventory.ini
+sed -i "s/^zabbix_internal_ip:.*/zabbix_internal_ip: \"$ZABBIX_INTERNAL_IP\"/" ./private/vars.yml
+
+export ANSIBLE_CONFIG="./ansible.cfg"
+
+ansible-playbook -i ./inventory.ini ./playbooks/main.yml -e ansible_remote_tmp=/tmp/.ansible/tmp
+

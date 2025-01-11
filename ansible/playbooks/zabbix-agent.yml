@@ -1,14 +1,9 @@
 ---
 - name: Установка zabbix-agent2
   hosts: all
-  become: yes
-  vars:
-    zabbix_server: "zabbix.ru-central1.internal"
-    zabbix_agent_config: "/etc/zabbix/zabbix_agent2.conf"
-    host_metadata: "managed-host"
 
   tasks:
-    - name: Find IP in the 10.X.X.X subnet
+    - name: Определение внутреннего IP хоста
       set_fact:
         host_interface_ip: "{{ ansible_all_ipv4_addresses | select('search', '^10\\.') | list | first }}"
         
@@ -66,7 +61,7 @@
           lineinfile:
             path: "{{ zabbix_agent_config }}"
             regexp: '^#? ?HostMetadata='
-            line: "HostMetadata={{ host_metadata }}"
+            line: "HostMetadata={{ zabbix_host_metadata }}"
             state: present
 
         - name: Указать параметр HostInterface

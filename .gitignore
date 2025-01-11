@@ -1,3 +1,4 @@
+large/
 *.tfstate*
 .terraform*
 *.tfvars

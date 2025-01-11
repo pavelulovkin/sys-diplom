@@ -82,9 +82,8 @@ resource "yandex_vpc_security_group" "rule_internal" {
     v4_cidr_blocks = ["0.0.0.0/0"]
   }
 }
-
-resource "yandex_vpc_security_group" "rule_internal_web" {
-  name       = "rule-internal-web"
+resource "yandex_vpc_security_group" "rule_zabbix_server" {
+  name       = "rule-zabbix-server"
   network_id = yandex_vpc_network.network_cloud.id
   ingress {
     protocol       = "tcp"
@@ -92,7 +91,15 @@ resource "yandex_vpc_security_group" "rule_internal_web" {
     port           = 80
   }
 }
-
+resource "yandex_vpc_security_group" "rule_kibana" {
+  name       = "rule-kibana"
+  network_id = yandex_vpc_network.network_cloud.id
+  ingress {
+    protocol       = "tcp"
+    v4_cidr_blocks = ["10.0.0.0/24"]
+    port           = 5601
+  }
+}
 resource "yandex_vpc_security_group" "rule_elasticsearch" {
   name       = "rule-elasticsearch"
   network_id = yandex_vpc_network.network_cloud.id
