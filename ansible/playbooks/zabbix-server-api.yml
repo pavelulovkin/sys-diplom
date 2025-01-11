@@ -44,6 +44,9 @@
               - operationtype: "4"
                 opgroup:
                   - groupid: "2"
+              - operationtype: "6"
+                optemplate:
+                  - templateid: "10001"
         headers:
           Authorization: "Bearer {{ zabbix_auth_token }}"
         body_format: json
