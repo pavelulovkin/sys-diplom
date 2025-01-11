@@ -1,11 +1,13 @@
 ---
-- name: Add autoregistration rule in Zabbix for Linux servers
+- name: Создание правила авторегистрации для хостов
   gather_facts: no
   hosts:
     - zabbix.ru-central1.internal
-
+  vars_files:
+    - ../private/vars.yml
+    
   tasks:
-    - name: Authenticate to Zabbix API
+    - name: Получить токен пользователя по умолчанию
       uri:
         url: "{{ zabbix_url }}"
         method: POST
@@ -20,11 +22,11 @@
         return_content: yes
       register: auth_response
 
-    - name: Extract auth token
+    - name: Извлечь токен в переменную
       set_fact:
         zabbix_auth_token: "{{ auth_response.json.result }}"
 
-    - name: Create autoregistration action for Linux servers
+    - name: Создать правило авторегистрации
       uri:
         url: "{{ zabbix_url }}"
         method: POST
@@ -32,14 +34,14 @@
           jsonrpc: "2.0"
           method: "action.create"
           params:
-            name: "Register Linux servers"
+            name: "Регистрация хостов по значению метаданных"
             eventsource: "2"
             filter:
               evaltype: "2"
               conditions:
                 - conditiontype: "24"
                   operator: "2"
-                  value: "managed-host"
+                  value: "{{ zabbix_host_metadata }}"
             operations:
               - operationtype: "4"
                 opgroup:
@@ -50,9 +52,19 @@
         headers:
           Authorization: "Bearer {{ zabbix_auth_token }}"
         body_format: json
-        return_content: yes
-      register: action_create_response
 
-    - name: Show action creation response
-      debug:
-        msg: "{{ action_create_response }}"
+    - name: Создать пользователя manager
+      uri:
+        url: "{{ zabbix_url }}"
+        method: POST
+        body:
+          jsonrpc: "2.0"
+          method: "user.create"
+          params:
+            username: "manager"
+            passwd: "{{ manager_password }}"
+            usrgrps:
+              - usrgrpid: "3"
+        headers:
+          Authorization: "Bearer {{ zabbix_auth_token }}"
+        body_format: json

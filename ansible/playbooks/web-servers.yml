@@ -4,24 +4,24 @@
     - web-server-2.ru-central1.internal
   become: yes
   tasks:
-    - name: Установка nginx
+    - name: Установить nginx
       apt:
         name: nginx
         state: present
         update_cache: yes
 
-    - name: Создание каталога для сайта
+    - name: Создать каталог сайта
       file:
         path: /var/www/website
         state: directory
         mode: '0755'
 
-    - name: Копирование архива с контентом сайта
+    - name: Скопировать архив с контентом сайта
       copy:
         src: ../files/website.tar
         dest: /var/www/website/website.tar
 
-    - name: Извлечение содержимого архива
+    - name: Извлечь содержимое архива
       unarchive:
         src: /var/www/website/website.tar
         dest: /var/www/website/

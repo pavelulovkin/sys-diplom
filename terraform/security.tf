@@ -90,6 +90,11 @@ resource "yandex_vpc_security_group" "rule_zabbix_server" {
     v4_cidr_blocks = ["10.0.0.0/24"]
     port           = 80
   }
+  ingress {
+    protocol       = "tcp"
+    v4_cidr_blocks = ["127.0.0.1/32"]
+    port           = 10050
+  }
 }
 resource "yandex_vpc_security_group" "rule_kibana" {
   name       = "rule-kibana"

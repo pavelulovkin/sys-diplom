@@ -2,21 +2,21 @@
   hosts: kibana.ru-central1.internal
 
   tasks:
-    - name: Определение внутреннего IP хоста
+    - name: Определить внутренний IP хоста
       set_fact:
         host_interface_ip: "{{ ansible_all_ipv4_addresses | select('search', '^10\\.') | list | first }}"
 
-    - name: Копирование пакета .deb
+    - name: Скопировать пакет установки
       copy:
         src: ../files/large/kibana-8.17.0-amd64.deb
         dest: /tmp/kibana.deb
 
-    - name: Установка пакета .deb
+    - name: Установить пакет
       apt:
         deb: /tmp/kibana.deb
         state: present
 
-    - name: Удаление файла пакета .deb
+    - name: Удалить файл пакета
       file:
         path: /tmp/kibana.deb
         state: absent
@@ -27,7 +27,7 @@
           lineinfile:
             path: "{{ kibana_config }}"
             regexp: '^#?server.port: '
-            line: "server.port: {{ kibana_server_port }}"
+            line: "server.port: 5601"
             state: present
 
         - name: Указать интерфейс прослушивания Kibana
@@ -37,7 +37,7 @@
             line: "server.host: {{ host_interface_ip }}"
             state: present
 
-    - name: Перезапуск сервиса Kibana
+    - name: Перезапустить сервис Kibana
       systemd:
         name: kibana
         state: restarted

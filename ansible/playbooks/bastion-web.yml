@@ -1,26 +1,25 @@
-- name: Установка и настройка
+- name: Установка и настройка веб-доступа к мониторингу
   hosts: bastion.ru-central1.internal
-  become: yes
   tasks:
-    - name: Установка nginx
+    - name: Установить nginx
       apt:
         name: nginx
         state: present
         update_cache: yes
 
-    - name: Копирование файла конфигурации
+    - name: Скопировать файл конфигурации
       copy:
         src: ../templates/bastion-web.conf.j2
         dest: /etc/nginx/sites-available/bastion-web.conf
         mode: '0644'
     
-    - name: Создание каталога
+    - name: Создать каталог для ключей
       file:
         path: /etc/nginx/ssl
         state: directory
         mode: '0755'
 
-    - name: Копирование сертификата
+    - name: Скопировать сертификат
       copy:
         src: ../files/private/fullchain.cer
         dest: /etc/nginx/ssl/fullchain.cer
@@ -28,7 +27,7 @@
         group: www-data
         mode: '0600'
 
-    - name: Копирование ключа
+    - name: Скопировать закрытый ключ
       copy:
         src: ../files/private/sys34-ulovkinp.run.place.key
         dest: /etc/nginx/ssl/sys34-ulovkinp.run.place.key
@@ -36,19 +35,19 @@
         group: www-data
         mode: '0600'
 
-    - name: Создание сим-линка в sites-enabled
+    - name: Создать симлинк в sites-enabled
       file:
         src: /etc/nginx/sites-available/bastion-web.conf
         dest: /etc/nginx/sites-enabled/bastion-web.conf
         state: link
 
-    - name: Удаление сайта по умолчанию
+    - name: Удалить сайт по умолчанию
       file:
         path: /etc/nginx/sites-enabled/default
         state: absent
       ignore_errors: yes
 
-    - name: Запуск сервиса nginx
+    - name: Перезапустить сервис nginx
       systemd:
         name: nginx
         enabled: yes

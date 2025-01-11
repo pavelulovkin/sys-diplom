@@ -3,38 +3,22 @@
 
   tasks:
 
-    - name: Копирование пакета .deb
+    - name: Скопировать установочный пакет
       copy:
         src: ../files/large/elasticsearch-8.17.0-amd64.deb
         dest: /tmp/elasticsearch.deb
 
-    - name: Установка пакета .deb
+    - name: Установить пакет
       apt:
         deb: /tmp/elasticsearch.deb
         state: present
 
-    - name: Удаление файла пакета .deb
+    - name: Удалить временный файл
       file:
         path: /tmp/elasticsearch.deb
         state: absent
 
-    # - name: Конфигурация kibana
-    #   block:
-    #     - name: Указать порт прослушивания Kibana
-    #       lineinfile:
-    #         path: "{{ kibana_config }}"
-    #         regexp: '^#?server.port: '
-    #         line: "server.port: {{ kibana_server_port }}"
-    #         state: present
-
-    #     - name: Указать интерфейс прослушивания Kibana
-    #       lineinfile:
-    #         path: "{{ kibana_config }}"
-    #         regexp: '^#?server.host: '
-    #         line: "server.host: {{ host_interface_ip }}"
-    #         state: present
-
-    - name: Перезапуск сервиса elasticsearch
+    - name: Перезапустить сервис elasticsearch
       systemd:
         name: elasticsearch
         state: restarted

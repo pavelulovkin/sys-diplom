@@ -4,8 +4,8 @@
 $DB['TYPE']				= 'POSTGRESQL';
 $DB['SERVER']			= 'localhost';
 $DB['PORT']				= '0';
-$DB['DATABASE']			= '{{ db_name }}';
-$DB['USER']				= '{{ db_user }}';
+$DB['DATABASE']			= '{{ zabbix_db }}';
+$DB['USER']				= '{{ zabbix_db }}';
 $DB['PASSWORD']			= '{{ db_password }}';
 
 // Schema name. Used for PostgreSQL.
@@ -28,6 +28,6 @@ $DB['VAULT_TOKEN']		= '';
 $DB['VAULT_CERT_FILE']	= '';
 $DB['VAULT_KEY_FILE']	= '';
 
-$ZBX_SERVER_NAME		= 'zabbix.ru-central1.internal';
+$ZBX_SERVER_NAME		= '{{ ansible_hostname }}';
 
 $IMAGE_FORMAT_DEFAULT	= IMAGE_FORMAT_PNG;
