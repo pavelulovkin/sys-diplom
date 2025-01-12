@@ -3,9 +3,11 @@
   gather_facts: no
   hosts:
     - zabbix.ru-central1.internal
+  vars:
+    zabbix_url: "http://localhost/api_jsonrpc.php"
   vars_files:
     - ../private/vars.yml
-    
+
   tasks:
     - name: Получить токен пользователя по умолчанию
       uri:
@@ -26,7 +28,7 @@
       set_fact:
         zabbix_auth_token: "{{ auth_response.json.result }}"
 
-    - name: Создать правило авторегистрации
+    - name: Создать правило авторегистрации Linux servers
       uri:
         url: "{{ zabbix_url }}"
         method: POST
@@ -40,8 +42,8 @@
               evaltype: "2"
               conditions:
                 - conditiontype: "24"
-                  operator: "2"
-                  value: "{{ zabbix_host_metadata }}"
+                  operator: "0"
+                  value: "managed-host-nginx"
             operations:
               - operationtype: "4"
                 opgroup:
@@ -49,6 +51,33 @@
               - operationtype: "6"
                 optemplate:
                   - templateid: "10001"
+        headers:
+          Authorization: "Bearer {{ zabbix_auth_token }}"
+        body_format: json
+
+    - name: Создать правило авторегистрации Nginx
+      uri:
+        url: "{{ zabbix_url }}"
+        method: POST
+        body:
+          jsonrpc: "2.0"
+          method: "action.create"
+          params:
+            name: "Регистрация хостов nginx по значению метаданных"
+            eventsource: "2"
+            filter:
+              evaltype: "2"
+              conditions:
+                - conditiontype: "24"
+                  operator: "2"
+                  value: "managed-host-nginx"
+            operations:
+              - operationtype: "4"
+                opgroup:
+                  - groupid: "2"
+              - operationtype: "6"
+                optemplate:
+                  - templateid: "10266"
         headers:
           Authorization: "Bearer {{ zabbix_auth_token }}"
         body_format: json

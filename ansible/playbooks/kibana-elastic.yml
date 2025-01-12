@@ -2,13 +2,16 @@
   hosts: 
     - elastic.ru-central1.internal
     - kibana.ru-central1.internal
+  vars_files:
+    - ../private/vars.yml
 
   tasks:
     - name: Сгенерировать токен elasticsearch
       when: inventory_hostname == 'elastic.ru-central1.internal'
       shell: |
         cd /usr/share/elasticsearch/bin/
-        sudo ./elasticsearch-create-enrollment-token
+        sudo ./elasticsearch-create-enrollment-token -s kibana
+        echo -e "y\n{{ elastic_password }}\n{{ elastic_password }}" | sudo ./elasticsearch-reset-password -u elastic -i
       register: enrollment_token
 
     - name: Указать токен в kibana
@@ -16,3 +19,10 @@
       shell: |
         cd /usr/share/kibana/bin
         echo "{{ hostvars['elastic.ru-central1.internal'].enrollment_token.stdout }}" | sudo ./kibana-setup
+
+    - name: Перезапустить сервис
+      service:
+        name: kibana
+        state: restarted
+        enabled: yes
+      when: inventory_hostname == 'kibana.ru-central1.internal'

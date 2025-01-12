@@ -1,6 +1,8 @@
 - name: Установка и настройка kibana
   hosts: kibana.ru-central1.internal
-
+  vars:
+    kibana_config: /etc/kibana/kibana.yml
+    
   tasks:
     - name: Определить внутренний IP хоста
       set_fact:

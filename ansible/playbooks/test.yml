@@ -1,0 +1,10 @@
+- name: Установка и настройка сайта
+  hosts: 
+    - zabbix.ru-central1.internal
+  tasks:
+    - name: Debug ansible_hostname
+      debug:
+        msg: "The ansible_hostname is {{ ansible_hostname }}"
+    - name: Debug ansible_fqdn
+      debug:
+        msg: "The ansible_fqdn is {{ ansible_fqdn }}"

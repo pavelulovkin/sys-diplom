@@ -1,6 +1,11 @@
 ---
 - name: Установка zabbix-agent2
   hosts: all
+  vars:
+    zabbix_agent_config: "/etc/zabbix/zabbix_agent2.conf"
+    web_hosts:
+      - web-server1.ru-central1.internal
+      - web-server2.ru-central1.internal
   vars_files:
     - ../private/vars.yml
     
@@ -14,7 +19,7 @@
         url: "https://repo.zabbix.com/zabbix/7.2/release/debian/pool/main/z/zabbix-release/zabbix-release_latest_7.2+debian12_all.deb"
         dest: "/tmp/zabbix-release_latest_7.2+debian12_all.deb"
 
-    - name: Установить пакет Zabbix release
+    - name: Установить пакет zabbix release
       apt:
         deb: "/tmp/zabbix-release_latest_7.2+debian12_all.deb"
         state: present
@@ -66,6 +71,15 @@
             regexp: '^#? ?HostMetadata='
             line: "HostMetadata={{ zabbix_host_metadata }}"
             state: present
+          when: ansible_fqdn not in web_hosts
+
+        - name: Указать параметр Metadata
+          lineinfile:
+            path: "{{ zabbix_agent_config }}"
+            regexp: '^#? ?HostMetadata='
+            line: "HostMetadata=managed-host-nginx"
+            state: present
+          when: ansible_fqdn in web_hosts
 
         - name: Указать параметр HostInterface
           lineinfile:
@@ -73,7 +87,7 @@
             regexp: '^#? ?HostInterface='
             line: "HostInterface={{ host_interface_ip }}"
             state: present
-      when: ansible_hostname != "zabbix.ru-central1.internal"
+      when: ansible_fqdn != "zabbix.ru-central1.internal"
 
     - name: Установить путь для логов
       lineinfile:

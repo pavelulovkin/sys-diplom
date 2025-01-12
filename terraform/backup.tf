@@ -1,14 +1,21 @@
-data "yandex_compute_instance" "all_vms" {
-  for_each = toset(["bastion", "web-server-1", "web-server-2", "zabbix", "kibana", "elastic"])
-  name     = each.key
-}
-
 resource "yandex_compute_snapshot_schedule" "snapshot_schedule" {
-  for_each       = { for instance in data.yandex_compute_instance.all_vms : instance.id => instance }
-  name           = "${each.key}-snapshot-schedule"
-  disk_ids       = [each.value.boot_disk.0.disk_id]
+  name           = "snapshot-schedule"
+  disk_ids = [
+    yandex_compute_instance.bastion.boot_disk[0].disk_id,
+    yandex_compute_instance.web-server[0].boot_disk[0].disk_id,
+    yandex_compute_instance.web-server[1].boot_disk[0].disk_id,
+    yandex_compute_instance.zabbix.boot_disk[0].disk_id,
+    yandex_compute_instance.kibana.boot_disk[0].disk_id,
+    yandex_compute_instance.elastic.boot_disk[0].disk_id
+  ]
+  depends_on = [
+    yandex_compute_instance.bastion,
+    yandex_compute_instance.web-server,
+    yandex_compute_instance.zabbix,
+    yandex_compute_instance.kibana,
+    yandex_compute_instance.elastic
+  ]
   snapshot_count = 7
-
   schedule_policy {
     expression = "0 0 * * *"
   }
