@@ -4,7 +4,7 @@
     - web-server-2.ru-central1.internal
   vars_files:
     - ../private/vars.yml
-    
+
   tasks:
 
     - name: Скопировать установочный пакет
@@ -22,11 +22,16 @@
         path: /tmp/filebeat.deb
         state: absent
 
-    - name: Копирование конфигурационного файла
-      copy:
-        src: ../templates/filebeat.conf.j2
-        dest: /etc/filebeat/filebeat.conf
-        mode: '0666'
+    - name: Копирование файла настроек
+      template:
+        src: ../templates/filebeat.yml.j2
+        dest: /etc/filebeat/filebeat.yml
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Сменить пароль elastic
+      shell: sudo filebeat modules enable nginx
 
     - name: Перезапустить сервис filebeat
       systemd:

@@ -23,7 +23,7 @@
 
 ### Сайт: комментарии
 
-
+Доступ к web-сайту по адресу: http://sys34-ulovkinp.run.place Выполняется перенаправление на https, ипользуется доверенный ключ letsencrypt. Согласно условиям, используется alb `./terraform/balancer.tf`.
 
 ---
 
@@ -33,7 +33,8 @@
 
 ### Мониторинг: комментарии
 
-
+Доступ к web-интерфейсу zabbix по адресу: http://zabbix.sys34-ulovkinp.run.place Выполняется перенаправление на https, ипользуется доверенный ключ letsencrypt.
+Пользователь будет указан в комментариях к задаче.
 
 ---
 
@@ -44,7 +45,8 @@ Cоздайте ВМ, разверните на ней Elasticsearch. Устан
 
 ### Логи: комментарии
 
-
+Доступ к web-интерфейсу zabbix по адресу: http://kibana.sys34-ulovkinp.run.place Выполняется перенаправление на https, ипользуется доверенный ключ letsencrypt.
+Пользователь будет указан в комментариях к задаче.
 
 ---
 
@@ -52,7 +54,7 @@ Cоздайте ВМ, разверните на ней Elasticsearch. Устан
 Разверните один VPC. Сервера web, Elasticsearch поместите в приватные подсети. Сервера Zabbix, Kibana, application load balancer определите в публичную подсеть.
 
 ### Сеть: комментарии
-VPC - network_cloud, подсети - subnet_public, subnet_private_elastic, subnet_private_web (2 подсети в зонах доступности: ru-central1-a, ru-central1-b), subnet_private_elastic `./terraform/network.tf`
+VPC - network_cloud, подсети - subnet_public, subnet_private_web (2 подсети в зонах доступности: ru-central1-a, ru-central1-b), subnet_private_elastic `./terraform/network.tf`
 
 Отдельные группы безопасности указаны в `./terraform/security.tf`
 
