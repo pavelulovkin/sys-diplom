@@ -4,8 +4,8 @@
   vars:
     zabbix_agent_config: "/etc/zabbix/zabbix_agent2.conf"
     web_hosts:
-      - web-server1.ru-central1.internal
-      - web-server2.ru-central1.internal
+      - web-server-1.ru-central1.internal
+      - web-server-2.ru-central1.internal
   vars_files:
     - ../private/vars.yml
     

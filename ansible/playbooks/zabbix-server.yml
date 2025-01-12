@@ -31,6 +31,7 @@
           - zabbix-sql-scripts
           - python3-psycopg2
           - acl
+          - python3-bcrypt
         state: present
         update_cache: yes
 
@@ -58,6 +59,12 @@
 
     - name: Импортировать шаблон в базу данных
       shell: "zcat /usr/share/zabbix/sql-scripts/postgresql/server.sql.gz | sudo -u zabbix psql zabbix"
+    
+    - name: Изменить пароль пользователя Admin
+      shell: |
+        alias bcryptgen='python3 -c "import bcrypt, sys; print(bcrypt.hashpw(sys.argv[1].encode(), bcrypt.gensalt()).decode())"'
+        PASS=$(bcryptgen {{ manager_password }})
+        sudo -u zabbix psql zabbix -c "UPDATE users SET passwd = '$PASS' WHERE username = 'Admin';"
 
     - name: zabbix-server - пароль базы данных
       lineinfile:

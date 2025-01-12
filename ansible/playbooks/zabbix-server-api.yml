@@ -18,7 +18,7 @@
           method: "user.login"
           params:
             username: "{{ zabbix_user }}"
-            password: "{{ zabbix_password }}"
+            password: "{{ manager_password }}"
           id: 1
         body_format: json
         return_content: yes
@@ -43,7 +43,7 @@
               conditions:
                 - conditiontype: "24"
                   operator: "0"
-                  value: "managed-host-nginx"
+                  value: "managed-host"
             operations:
               - operationtype: "4"
                 opgroup:
@@ -69,12 +69,9 @@
               evaltype: "2"
               conditions:
                 - conditiontype: "24"
-                  operator: "2"
+                  operator: "0"
                   value: "managed-host-nginx"
             operations:
-              - operationtype: "4"
-                opgroup:
-                  - groupid: "2"
               - operationtype: "6"
                 optemplate:
                   - templateid: "10266"
