@@ -22,3 +22,5 @@
     kibana_config: /etc/kibana/kibana.yml
 
 - import_playbook: elasticsearch.yml
+
+- import_playbook: kibana-elastic.yml

@@ -73,7 +73,7 @@
             regexp: '^#? ?HostInterface='
             line: "HostInterface={{ host_interface_ip }}"
             state: present
-      when: ansible_hostname != "{{ zabbix_server }}"
+      when: ansible_hostname != "zabbix.ru-central1.internal"
 
     - name: Установить путь для логов
       lineinfile:

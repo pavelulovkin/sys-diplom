@@ -1,0 +1,18 @@
+- name: Настройка связи elasticsearh и kibana
+  hosts: 
+    - elastic.ru-central1.internal
+    - kibana.ru-central1.internal
+
+  tasks:
+    - name: Сгенерировать токен elasticsearch
+      when: inventory_hostname == 'elastic.ru-central1.internal'
+      shell: |
+        cd /usr/share/elasticsearch/bin/
+        sudo ./elasticsearch-create-enrollment-token
+      register: enrollment_token
+
+    - name: Указать токен в kibana
+      when: inventory_hostname == 'kibana.ru-central1.internal'
+      shell: |
+        cd /usr/share/kibana/bin
+        echo "{{ hostvars['elastic.ru-central1.internal'].enrollment_token.stdout }}" | sudo ./kibana-setup

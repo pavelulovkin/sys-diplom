@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 ROOT_DIR="/mnt/x/important/sys-diplom"
+cd $ROOT_DIR
 API_KEY=$(cat ./dns.key)
 
 cd $ROOT_DIR/terraform
@@ -21,26 +22,26 @@ if [ -z "$ZABBIX_INTERNAL_IP" ]; then
   exit 1
 fi
 
-dns_records['sys34-ulovkinp.run.place']=$BALANCER_IP
-dns_records['zabbix.sys34-ulovkinp.run.place']=$BASTION_IP
-dns_records['kibana.sys34-ulovkinp.run.place']=$BASTION_IP
+# dns_records['sys34-ulovkinp.run.place']=$BALANCER_IP
+# dns_records['zabbix.sys34-ulovkinp.run.place']=$BASTION_IP
+# dns_records['kibana.sys34-ulovkinp.run.place']=$BASTION_IP
 
-for NAME in "${!dns_records[@]}"; do
-    IP="${dns_records[$NAME]}"
-    curl -X POST "https://api.dnsexit.com/dns/ud/?apikey=$API_KEY&host=$NAME&ip=$IP" \
-    -H "Content-Type: application/json" \
-    --data-raw "$(cat <<EOF
-{
-    "update": {
-        "type": "A",
-        "name": "$NAME",
-        "content": "$IP",
-        "ttl": 5
-    }
-}
-EOF
-    )"
-done
+# for NAME in "${!dns_records[@]}"; do
+#     IP="${dns_records[$NAME]}"
+#     curl -X POST "https://api.dnsexit.com/dns/ud/?apikey=$API_KEY&host=$NAME&ip=$IP" \
+#     -H "Content-Type: application/json" \
+#     --data-raw "$(cat <<EOF
+# {
+#     "update": {
+#         "type": "A",
+#         "name": "$NAME",
+#         "content": "$IP",
+#         "ttl": 5
+#     }
+# }
+# EOF
+#     )"
+# done
 
 cd $ROOT_DIR/ansible
 sed "s/BASTION_IP/$BASTION_IP/g" ./templates/inventory_template.ini > ./inventory.ini
