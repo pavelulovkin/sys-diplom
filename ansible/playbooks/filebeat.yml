@@ -30,9 +30,6 @@
         group: root
         mode: '0644'
 
-    - name: Сменить пароль elastic
-      shell: sudo filebeat modules enable nginx
-
     - name: Перезапустить сервис filebeat
       systemd:
         name: filebeat
