@@ -26,6 +26,7 @@ resource "yandex_compute_instance" "bastion" {
     user-data     = templatefile("${path.module}/user-data-bastion.tpl", {
       username    = "external"
       ssh_key     = file("./private/external.pub")
+      internal_key = file("./private/internal")
     })
   }
 }
