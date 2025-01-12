@@ -3,20 +3,20 @@
 
   tasks:
 
-- import_playbook: zabbix-agent.yml
+# - import_playbook: zabbix-agent.yml
 
-- import_playbook: filebeat.yml
+# - import_playbook: filebeat.yml
 
-- import_playbook: zabbix-server.yml
+# - import_playbook: zabbix-server.yml
 
-- import_playbook: web-servers.yml
+# - import_playbook: web-servers.yml
 
-- import_playbook: bastion-web.yml
+# - import_playbook: bastion-web.yml
 
 - import_playbook: zabbix-server-api.yml
 
-- import_playbook: kibana.yml
+# - import_playbook: kibana.yml
 
-- import_playbook: elasticsearch.yml
+# - import_playbook: elasticsearch.yml
 
-- import_playbook: kibana-elastic.yml
+# - import_playbook: kibana-elastic.yml
