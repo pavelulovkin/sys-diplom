@@ -29,6 +29,6 @@ variable "instance_resources" {
 
 variable "scheduling_policy" {
   default = {
-    preemptible   = true
+    preemptible   = false
   }
 }

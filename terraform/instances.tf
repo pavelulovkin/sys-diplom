@@ -3,6 +3,7 @@ resource "yandex_compute_instance" "bastion" {
   name            = "bastion"
   hostname        = "bastion"
   platform_id     = var.platform_id
+  allow_stopping_for_update = true
   scheduling_policy {
     preemptible   = var.scheduling_policy.preemptible
   }
@@ -30,6 +31,7 @@ resource "yandex_compute_instance" "bastion" {
   }
 }
 resource "yandex_compute_instance" "web-server" {
+  allow_stopping_for_update = true
   count           = 2
   name            = "web-server-${count.index + 1}"
   hostname        = "web-server-${count.index + 1}"
@@ -62,6 +64,7 @@ resource "yandex_compute_instance" "web-server" {
 }
 
 resource "yandex_compute_instance" "zabbix" {
+  allow_stopping_for_update = true
   name            = "zabbix"
   hostname        = "zabbix"
   platform_id     = var.platform_id
@@ -92,6 +95,7 @@ resource "yandex_compute_instance" "zabbix" {
 }
 
 resource "yandex_compute_instance" "kibana" {
+  allow_stopping_for_update = true
   name            = "kibana"
   hostname        = "kibana"
   platform_id     = var.platform_id
@@ -122,6 +126,7 @@ resource "yandex_compute_instance" "kibana" {
 }
 
 resource "yandex_compute_instance" "elastic" {
+  allow_stopping_for_update = true
   name            = "elastic"
   hostname        = "elastic"
   platform_id     = var.platform_id
