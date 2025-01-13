@@ -6,8 +6,6 @@ filebeat.inputs:
     enabled: true
     paths:
       - /var/log/nginx/access.log
-    fields:
-      index_name: "nginx-access"
     multiline:
       pattern: '^\s'
       negate: true
@@ -18,35 +16,10 @@ filebeat.inputs:
     enabled: true
     paths:
       - /var/log/nginx/error.log
-    fields:
-      index_name: "nginx-error"
     multiline:
       pattern: '^\s'
       negate: true
       match: after
-
-processors:
-  - copy_fields:
-      fields:
-        - from: "fields.index_name"
-          to: "index_name"
-
-  - if.equals:
-      index_name: "nginx-access"
-    then:
-      - dissect:
-          tokenizer: "%{remote_addr} - %{username} [%{timestamp} - %{response_time}] %{status_code} \"%{request}\" %{bytes_sent} \"%{referrer}\" \"%{user_agent}\" \"%{forwarded_for}\""
-          field: "message"
-          target_prefix: ""
-
-  - if.equals:
-      index_name: "bitrix-nginx-error"
-    then:
-      - dissect:
-          tokenizer: '%{timestamp} [%{level}] %{process}#%{thread}: %{error}'
-          field: "message"
-          target_prefix: ""
-
 
 output.elasticsearch:
   hosts: ["https://elastic.ru-central1.internal:9200"]

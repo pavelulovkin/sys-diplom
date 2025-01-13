@@ -31,3 +31,23 @@
         state: restarted
         enabled: yes
       when: inventory_hostname == 'kibana.ru-central1.internal'
+
+    - name: Создать dataview для nginx
+      uri:
+        url: "http://kibana.ru-central1.internal:5601/api/data_views/data_view"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+          kbn-xsrf: "string"
+          Authorization: "Basic ZWxhc3RpYzoxMjM0NTY="
+        body: |
+          {
+            "data_view": {
+              "title": "nginx-*",
+              "name": "Nginx"
+            }
+          }
+        body_format: json
+        status_code: 200
+        when: inventory_hostname == 'kibana.ru-central1.internal'
+        delegate_to: 'bastion.ru-central1.internal'

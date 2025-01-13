@@ -1,11 +1,12 @@
 - name: Запуск задач установки
   hosts: all
 
-  tasks:
+
+# - import_playbook: bastion.yml
 
 # - import_playbook: zabbix-agent.yml
 
-- import_playbook: filebeat.yml
+# - import_playbook: filebeat.yml
 
 # - import_playbook: zabbix-server.yml
 

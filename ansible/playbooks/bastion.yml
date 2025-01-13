@@ -1,0 +1,26 @@
+- name: Настройка подключения к внутренним хостам
+  hosts: bastion.ru-central1.internal
+  tasks:
+
+    - name: Скопировать закрытый ключ internal
+      copy:
+        src: ../private/internal
+        dest: /home/external/.ssh/internal
+        owner: external
+        group: external
+        mode: '0600'
+    - name: Создать файл config
+      copy:
+        dest: /home/external/.ssh/config
+        content: |
+          Host *
+              User internal
+              IdentityFile /home/external/.ssh/internal
+        owner: external
+        group: external
+        mode: '0644'
+
+    - name: Перезапустить службу sshd
+      service:
+        name: sshd
+        state: restarted
