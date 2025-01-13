@@ -6,31 +6,31 @@
     - ../private/vars.yml
 
   tasks:
-    - name: Сгенерировать токен elasticsearch
-      shell: |
-        cd /usr/share/elasticsearch/bin/
-        sudo ./elasticsearch-create-enrollment-token -s kibana
-      register: enrollment_token
-      when: inventory_hostname == 'elastic.ru-central1.internal'
+    # - name: Сгенерировать токен elasticsearch
+    #   shell: |
+    #     cd /usr/share/elasticsearch/bin/
+    #     sudo ./elasticsearch-create-enrollment-token -s kibana
+    #   register: enrollment_token
+    #   when: inventory_hostname == 'elastic.ru-central1.internal'
 
-    - name: Сменить пароль elastic
-      shell: |
-        cd /usr/share/elasticsearch/bin/
-        echo "y\n{{ manager_password }}\n{{ manager_password }}" | sudo ./elasticsearch-reset-password -u elastic -i
-      when: inventory_hostname == 'elastic.ru-central1.internal'
+    # - name: Сменить пароль elastic
+    #   shell: |
+    #     cd /usr/share/elasticsearch/bin/
+    #     echo "y\n{{ manager_password }}\n{{ manager_password }}" | sudo ./elasticsearch-reset-password -u elastic -i
+    #   when: inventory_hostname == 'elastic.ru-central1.internal'
 
-    - name: Указать токен в kibana
-      shell: |
-        cd /usr/share/kibana/bin
-        echo "{{ hostvars['elastic.ru-central1.internal'].enrollment_token.stdout }}" | sudo ./kibana-setup
-      when: inventory_hostname == 'kibana.ru-central1.internal'
+    # - name: Указать токен в kibana
+    #   shell: |
+    #     cd /usr/share/kibana/bin
+    #     echo "{{ hostvars['elastic.ru-central1.internal'].enrollment_token.stdout }}" | sudo ./kibana-setup
+    #   when: inventory_hostname == 'kibana.ru-central1.internal'
 
-    - name: Перезапустить сервис
-      service:
-        name: kibana
-        state: restarted
-        enabled: yes
-      when: inventory_hostname == 'kibana.ru-central1.internal'
+    # - name: Перезапустить сервис
+    #   service:
+    #     name: kibana
+    #     state: restarted
+    #     enabled: yes
+    #   when: inventory_hostname == 'kibana.ru-central1.internal'
 
     - name: Создать dataview для nginx
       uri:
@@ -49,5 +49,5 @@
           }
         body_format: json
         status_code: 200
-        when: inventory_hostname == 'kibana.ru-central1.internal'
-        delegate_to: 'bastion.ru-central1.internal'
+      when: inventory_hostname == 'kibana.ru-central1.internal'
+      delegate_to: 'bastion.ru-central1.internal'
