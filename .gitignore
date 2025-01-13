@@ -4,4 +4,4 @@ large/
 *.tfvars
 *private/
 *.tf_
-dns.key
+_*
