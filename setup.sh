@@ -38,7 +38,7 @@ cd $ROOT_DIR/ansible
 sed "s/BASTION_IP/$BASTION_IP/g" ./templates/inventory_template.ini > ./inventory.ini
 sed -i "s/^zabbix_internal_ip:.*/zabbix_internal_ip: \"$ZABBIX_INTERNAL_IP\"/" ./private/vars.yml
 
-export ANSIBLE_CONFIG="./ansible.cfg"
+# export ANSIBLE_CONFIG="./ansible.cfg"
 
-ansible-playbook -i ./inventory.ini ./playbooks/main.yml -e ansible_remote_tmp=/tmp/.ansible/tmp
+# ansible-playbook -i ./inventory.ini ./playbooks/main.yml -e ansible_remote_tmp=/tmp/.ansible/tmp
 

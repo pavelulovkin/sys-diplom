@@ -1,5 +1,8 @@
 resource "yandex_compute_snapshot_schedule" "snapshot_schedule" {
   name           = "snapshot-schedule"
+  schedule_policy {
+    expression = "0 0 * * *"
+  }
   disk_ids = [
     yandex_compute_instance.bastion.boot_disk[0].disk_id,
     yandex_compute_instance.web-server[0].boot_disk[0].disk_id,
@@ -15,13 +18,7 @@ resource "yandex_compute_snapshot_schedule" "snapshot_schedule" {
     yandex_compute_instance.kibana,
     yandex_compute_instance.elastic
   ]
-  snapshot_count = 7
-  schedule_policy {
-    expression = "0 0 * * *"
-  }
-
   retention_period = "168h"
-
   labels = {
     environment = "sys34"
   }
