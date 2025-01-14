@@ -1,0 +1,48 @@
+---
+- name: Deploy Nginx configuration and self-signed SSL
+  hosts: bastion.ru-central1.internal
+  become: true
+  vars:
+    ssl_cert_path: /etc/nginx/ssl
+    nginx_conf_path: /etc/nginx/sites-available/bastion-fix.conf
+    nginx_conf_dest: /etc/nginx/sites-enabled/bastion-fix.conf
+    domain_name: "{{ ansible_host }}"
+    cert_valid_days: 365
+
+  tasks:
+    - name: Проверить директорию
+      file:
+        path: "{{ ssl_cert_path }}"
+        state: directory
+        mode: '0755'
+
+    - name: Выпустить самоподписанный сертификат
+      command: >
+        openssl req -x509 -nodes -days {{ cert_valid_days }}
+        -newkey rsa:2048
+        -keyout {{ ssl_cert_path }}/selfsigned.key
+        -out {{ ssl_cert_path }}/selfsigned.crt
+        -subj "/CN={{ domain_name }}"
+
+    - name: Скопировать конфигурацию nginx
+      template:
+        src: ../templates/bastion-web-fix.conf.j2
+        dest: "{{ nginx_conf_path }}"
+        mode: '0644'
+
+    - name: Активировать конфигурацию nginx
+      file:
+        src: "{{ nginx_conf_path }}"
+        dest: "{{ nginx_conf_dest }}"
+        state: link
+        force: true
+
+    - name: Проверить конфигурацию nginx
+      command: nginx -t
+      register: nginx_test
+      failed_when: "'successful' not in nginx_test.stderr"
+
+    - name: Перезапустить сервис nginx
+      service:
+        name: nginx
+        state: restarted

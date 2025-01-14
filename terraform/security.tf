@@ -48,6 +48,16 @@ resource "yandex_vpc_security_group" "rule_load_balancer" {
     v4_cidr_blocks = ["0.0.0.0/0"]
     port           = 443
   }
+    ingress {
+    protocol       = "tcp"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    port           = 8080
+  }
+  ingress {
+    protocol       = "tcp"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    port           = 4443
+  }
 }
 resource "yandex_vpc_security_group" "rule_web_server" {
   name       = "rule-web-server"

@@ -39,6 +39,13 @@
             line: "server.host: {{ host_interface_ip }}"
             state: present
 
+        - name: Указать префикс url Kibana
+          lineinfile:
+            path: "{{ kibana_config }}"
+            regexp: '^#?server.basePath: '
+            line: "server.basePath: \"/kibana\""
+            state: present
+
     - name: Перезапустить сервис Kibana
       systemd:
         name: kibana
