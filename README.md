@@ -83,5 +83,6 @@ VPC - network_cloud, подсети - subnet_public, subnet_private_web (2 по�
 ### Резервное копирование: комментарии
  Снапшоты создаются ежедневно согласно расписанию snapshot_schedule. Срок хранения: 168 часов `./terraform/backup.tf`
 
-![snapshot-schedule](./images/Снимок%20экрана%202025-01-13%20195813.png)
+![snapshots-schedule](./images/snapshots-schedule.jpg)
+![snapshots-list](./images/snapshots-list.jpg)
 ---
