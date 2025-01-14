@@ -10,7 +10,7 @@ resource "yandex_compute_instance" "bastion" {
   resources {
     cores         = var.instance_resources.cores
     core_fraction = var.instance_resources.core_fraction
-    memory        = var.instance_resources.memory
+    memory        = 1
   }
   boot_disk {
     initialize_params {
@@ -43,7 +43,7 @@ resource "yandex_compute_instance" "web-server" {
   resources {
     cores         = var.instance_resources.cores
     core_fraction = var.instance_resources.core_fraction
-    memory        = var.instance_resources.memory
+    memory        = 1
   }
   boot_disk {
     initialize_params {
@@ -136,12 +136,12 @@ resource "yandex_compute_instance" "elastic" {
   resources {
     cores         = var.instance_resources.cores
     core_fraction = var.instance_resources.core_fraction
-    memory        = var.instance_resources.memory
+    memory        = 3
   }
   boot_disk {
     initialize_params {
       image_id    = var.image_id
-      size        = 20 #var.disk_size
+      size        = 20
     }
   }
   network_interface {
